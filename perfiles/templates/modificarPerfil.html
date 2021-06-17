@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block button_header %}
+
+    <form>
+        <input class="btn btn-danger ml-4" type="button" value="Volver" onclick="history.go(-1)">
+    </form>
+{% endblock button_header %}
+{% block content %}
+<div class="jumbotron bg-dark m-4">
+
+    <div class="row mb-4">
+        <h1 class="display-4">Modificar perfil</h1>
+    </div>
+
+    <form method="post" action="{% url 'perfiles:modificarPerfil' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-danger ml-2" onclick="return confirm('¿Seguro que desea modificar su perfil?');"  name="submit">Modificar perfil</button>
+        <input type="hidden" name="next" value="{% url 'perfiles:modificarPerfil' %}" />
+    </form>
+</div>
+
+{% endblock content %}

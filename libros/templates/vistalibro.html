@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block button_header %}
+
+    <form>
+        <input class="btn btn-danger ml-4" type="button" value="Volver" onclick="history.go(-1)">
+    </form>
+{% endblock button_header %}
+{% block page_header %}
+    <div class="row m-4">
+        <h3>{{ libro }}</h3>
+    </div>
+{% endblock page_header %}
+
+{% block content %}
+    <div class="card bg-dark mb-3">
+        <div class="card-body">
+            <div class="row bg-dark d-block">
+                <div class="float-auto">
+                    <embed src={{ cont }} type='application/pdf' width="100%" height="575">
+                </div>
+                <div class="float-right">
+                    <a class="btn btn-danger" href="{% url 'libros:finalizar' libro.ISBN %}">Finalizar lectura</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,11 @@
+
+{% for i in calform.checked %}
+    <span onmouseover="starmark(this)" onclick="starmark(this)" id={{i}}  style="font-size:40px;cursor:pointer;" class="fa fa-star checked"></span>
+{% endfor %}
+{% for i in calform.unchecked %}
+    <span onmouseover="starmark(this)" onclick="starmark(this)" id={{i}}  style="font-size:40px;cursor:pointer;" class="fa fa-star"></span>
+{% endfor %}
+
+
+
+

@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% block button_header %}
+
+    <form>
+        <input class="btn btn-danger ml-4" type="button" value="Volver" onclick="history.go(-1)">
+    </form>
+{% endblock button_header %}
+{% block page_header %}
+
+        <h3 class="display-3 m-4">{{ book }}</h3>
+
+{% endblock page_header %}
+
+{% block content %}
+
+<div class="card bg-dark mb-3">
+    <div class="row ml-4">
+
+            {% if messages %}
+
+                {% for message in messages %}
+                    <h4  {% if message.tags %} class=" {{ message.tags }} " {% endif %}>   {{ message }} </h4>
+                    {% if message.extra_tags %}
+                        <h4><a class="btn btn-danger ml-2 mb-4" href="#my_opinion">Calificar</a></h4>
+                    {% else %}
+                        <h4><a class="btn btn-danger ml-2 mb-4" href="{% url 'users:configurar' %}">Cambiar suscripción</a></h4>
+                    {% endif %}
+                {% endfor %}
+
+            {% endif %}
+    </div>
+    <div class="card-body">
+
+        <ul>
+
+            <div class="row mb-4">
+                <div class="col-4">
+                    <img class="mb-4" src="{{ book.imagen.url }}" alt="Imagen de portada" width="80%" />
+                    <h4 class="mb-4">Calificación: </h4>
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+                    <div class="mt-4" id="output">
+                        {% for i in calform.checked %}
+                            <span style="font-size:40px;cursor:pointer;" class="fa fa-star checked"></span>
+                        {% endfor %}
+                        {% for i in calform.unchecked %}
+                            <span  style="font-size:40px;cursor:pointer;" class="fa fa-star"></span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-8">
+                    {% if book.fecha_lanzamiento > hoy %}
+                        <div class="row">
+                            <h3 class="display-3">Próximamente</h3>
+                        </div>
+                        <div class="row">
+                            <h3>Este libro estará disponible a partir del {{ book.fecha_lanzamiento }}. </h3>
+                        </div>
+
+                    {% else %}
+                        <div class="row">
+                            <a class="lead"><h4>ISBN:</h4><a class="ml-2 mt-1">{{ book.ISBN }}</a></a>
+                        </div>
+                        <div class="row">
+                            <a class="lead"><h4>Autor: </h4><a class="text-light ml-2 mt-1" href="{% url 'libros:autor' book.autor.nombre %}">{{ book.autor }}</a></a>
+                        </div>
+                        <div class="row">
+                            <a class="lead"><h4>Género:</h4></a>
+                            {% for gen in book.genero.all %}
+
+                            <div class="list-inline">
+                                <a class="list-inline-item text-light ml-4 mt-1" href="{% url 'libros:genero' gen %}"> {{ gen }}</a>
+                            </div>
+
+                            {% endfor %}
+                        </div>
+                        <div class="row">
+                            <a class="lead"><h4>Editorial:</h4> <a class="text-light ml-2 mt-1" href="{% url 'libros:editorial' book.editorial.nombre %}"> {{ book.editorial }}</a> </a>
+                        </div>
+                        <div class="row">
+                            <a class="lead"><h4>Sinopsis:</h4> </a><a class="mt-1">{{ book.sinopsis }}</a>
+                        </div>
+                        <div class="row">
+                            <div class="mx-auto">
+                                {% if book.documento %}
+                                    <a class="btn btn-danger m-4" href="{% url 'libros:vistalibro' book.ISBN %}">Leer libro</a>
+                                {% else %}
+                                    <a class="btn btn-danger m-4" href="{% url 'libros:listado_capitulos' book.ISBN %}">Leer libro</a>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            {% endif %}
+        </ul>
+        {% include 'customwidgets/comments.html' %}
+    </div>
+</div>
+
+
+{% endblock content %}
+{% block javascript %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <style>
+    .checked {
+        color: orange;
+
+    }
+    </style>
+    <script type="text/javascript">
+                    var count;
+
+
+            function starmark(item){
+                count=item.id;
+                sessionStorage.starRating = count;
+                var subid= item.id;
+                for(var i=0;i<5;i++){
+                    if(i<count){
+                        document.getElementById(i+1).style.color="orange";
+                        }
+                    else{
+                        document.getElementById(i+1).style.color="black";
+                        }
+
+                 }
+
+           }
+
+            function calificar_confirm(book){
+            var comentario = document.getElementById("nuevo_comentario");
+            var spoil = document.getElementById("spoiler").checked;
+                $.ajax({
+                      url: "{% url 'libros:calificar' %}",
+                      method: 'POST',
+                      data: { csrfmiddlewaretoken:'{{ csrf_token }}', book: book, value: count, comment: comentario.value, spoiler : spoil },
+                      dataType: "json",
+                      success: function(data){
+                      $('#editar').hide();
+                      $('#my_cal').html(data.comment);
+                      $('#success_message').show(500);
+                      $('#success_message').html(data.message);
+                      $('#my_cal').show(500);
+                      $('#my_calification').show(500);}
+                                      })}
+            function cancelar_calificar(){
+                      $('#editar').hide();
+                      $('#my_cal').show(500);
+                      $('#my_calification').show(500);
+                      }
+            function ver_mas(c){
+                        $.ajax({
+                      url: "{% url 'libros:comentario_completo' %}",
+                      method: 'POST',
+                      data: { csrfmiddlewaretoken:'{{ csrf_token }}', comment: c},
+                      dataType: "json",
+                      success: function(data){
+                          var id = "comentario_texto" + c;
+                      $('#'+id).html(data.comment);} })
+                        }
+
+            function editar_request(book){
+                $.ajax({
+                      url: "{% url 'libros:editar_comentario' %}",
+                      method: 'POST',
+                      data: { csrfmiddlewaretoken:'{{ csrf_token }}', book:book },
+                      dataType: "json",
+                      success: function(data){
+                      if (data.result == 'Success'){
+                      $('#my_cal').hide();
+                      $('#my_calification').hide();
+                      $('#nuevo_comentario').html(data.my_comment);
+                      $('#editar').show(500);
+                                      }
+                        else {$('#no_cal').html(data.message)}}
+                                      })}
+
+            function eliminar_request(){
+                      $('#my_cal').hide();
+                      $('#my_calification').hide();
+                      $('#eliminar').show(500);
+                                      }
+
+            function eliminar_confirm(book){
+                $.ajax({
+                      url: "{% url 'libros:eliminar_comentario' %}",
+                      method: 'POST',
+                      data: { csrfmiddlewaretoken:'{{ csrf_token }}', book: book },
+                      dataType: "json",
+                      success: function(data){
+                      $('#eliminar').hide();
+                      $('#my_cal').html(data.comment);
+                      $('#success_message').show(500);
+                      $('#success_message').html(data.message);}
+                                      })}
+
+            function cancelar_eliminar(){
+                      $('#eliminar').hide();
+                      $('#my_cal').show(500);
+                      $('#my_calification').show(500);
+                      }
+
+            function calificar_request(book){
+                $.ajax({
+                      url: "{% url 'libros:calificacion' %}",
+                      method: 'POST',
+                      data: { csrfmiddlewaretoken:'{{ csrf_token }}', book:book },
+                      dataType: "json",
+
+                      success: function(data){
+                      if (data.result == 'Success'){
+                        $('#no_cal').hide();
+                        $('#nuevo_comentario').html(data.my_comment);
+                        $('#editar').show(500);
+                        }
+                        else {$('#no_cal').html(data.message)}}
+                                      })}
+
+            function reportarspoiler(c){
+                $.ajax({
+                      url: "{% url 'libros:reportar_spoiler' %}",
+                      method: 'POST',
+                      data: { csrfmiddlewaretoken:'{{ csrf_token }}', comment_id: c  },
+                      dataType: "json",
+                      success: function(data){
+                          var id = "comentario" + c;
+                      $('#'+id).html(data.message);}
+                                      })}
+
+            function reportarofensivo(c){
+                $.ajax({
+                      url: "{% url 'libros:reportar_ofensivo' %}",
+                      method: 'POST',
+                      data: { csrfmiddlewaretoken:'{{ csrf_token }}', comment: c  },
+                      dataType: "json",
+                      success: function(data){
+                          var id = "comentario" + c;
+                      $('#'+id).html(data.message);}
+                                      })}
+
+    </script>
+
+{% endblock javascript %}

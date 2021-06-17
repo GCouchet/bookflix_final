@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block button_header %}
+
+    <form>
+        <input class="btn btn-danger ml-4" type="button" value="Volver" onclick="history.go(-1)">
+    </form>
+{% endblock button_header %}
+{% block content %}
+<div class="jumbotron bg-dark m-4">
+
+    <div class="row mb-4">
+        <h1 class="display-4">Configuración de la cuenta</h1>
+    </div>
+    <div class="row align-items-center">
+            <div class="col-6 align-self-center">
+                <form method="post" action="{% url 'users:configurar' %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button class="btn btn-danger float-right" name="submit" style="margin-left:100px">Guardar cambios</button>
+                    <input type="hidden" name="next" value="{% url 'users:configurar' %}" />
+                </form>
+            </div>
+            <div class="col-6 align-self-end">
+                <form method="post" action="{% url 'users:confirmarEliminacion' %}">
+                        {% csrf_token %}
+                        <button class="btn btn-danger align-self-end" name="submit" style="margin-left:100px">Eliminar mi cuenta</button>
+                        <input type="hidden" name="next" value="{% url 'users:confirmarEliminacion' %}" />
+                </form>
+            <div>
+    </div>
+</div>
+
+{% endblock content %}

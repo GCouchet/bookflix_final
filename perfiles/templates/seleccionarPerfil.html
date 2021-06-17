@@ -1,0 +1,42 @@
+
+{% extends "base.html" %}
+
+{% block page_header %}
+
+
+{% endblock page_header %}
+
+{% block content %}
+
+
+<div class="jumbotron bg-dark">
+    <div class="row ml-4 mb-4">
+        <div class="col-10 col-xl-12 mx-auto"><h2 class="display-3">¿Quién está leyendo ahora?</h2></div>
+    </div>
+            {% if messages %}
+
+                {% for message in messages %}
+                     <h4>  {{ message }} </h4>
+                {% endfor %}
+
+            {% endif %}
+    {% if perfiles.exists %}
+    <div class="container">
+        <div class="row mt-4 mb-4">
+            {% for perfil in perfiles %}
+
+            <div class="col-2 bg-light mr-4 p-4">
+
+                <h3><a class="btn btn-lg btn-light" href="{% url 'perfiles:iniciarPerfil' perfil.id %}">{{ perfil.nombre }}</a></h3>
+
+            </div>
+            {% endfor %}
+         <div>
+    </div>
+    {% endif %}
+     <form method="GET" action="{% url 'perfiles:nuevoPerfil' %}">
+                <button class="btn btn-danger mt-3" type="submit">Crear perfil</button>
+     </form>
+</div>
+
+{% endblock content %}

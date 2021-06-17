@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+<head>
+    <style>
+        .hero_heading h3 {
+        border: 1px solid red;
+        color: white;
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        max-width: 600px;
+        }
+    </style>
+</head>
+
+{% block button_header %}
+
+{% endblock button_header %}
+
+{% block page_header %}
+
+
+
+    <div class= "jumbotron bg-dark d-block">
+
+    <div class="row"><h1 class="display-3">Trailers</h1><a class="btn btn-danger mx-auto m-4" href="{% url 'novedades:listado_trailers' %}">Ver todos los trailers</a></div>
+
+    {% for tra in trailer %}
+    <div  class="border border-secondary">
+            {% if forloop.counter == 1 %}
+                <div class="row">
+                    <h4 class="display-4 mx-auto"><div class="hero_heading text-center"><a class="text-light mx-auto" href="{% url 'novedades:novedad' tra.id %}">{{ tra }}</a></div></h4>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-4">
+                        <a href="{% url 'novedades:novedad' tra.id %}"/><img class="float-sm-right" src="{{ tra.libro.imagen.url }}" height="130px"  width="80px" /></a>
+                    </div>
+                    <div class="col-8">
+                        <div class="row mt-4">
+                           <h4> ¡Ingresá al enlace para conocer más! </h4>
+                        </div>
+                        <div class="row mx-auto">
+                            <a class="btn btn-danger mx-auto" href="{% url 'novedades:novedad' tra.id %}">Ver más</a>
+                        </div>
+                        <br>
+                        <br>
+                    </div>
+                </div>
+        </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+{% endblock page_header %}
+
+{% block content %}
+<div class="jumbotron bg-dark">
+    {% if user.is_authenticated %}
+    <div class="row mb-4">
+        <h1 class="display-3">Últimas novedades</h1><a class="btn btn-danger m-4" href="{% url 'novedades:listado_novedades' %}">Ver todas</a>
+    </div>
+    <div class="row">
+        <ul class="list">
+        {% for novedad in novedades %}
+            <hr class="mt-4 bg-light"/>
+            <div class="row">
+                <a class="text"><h2><a class="text-light" href="{% url 'novedades:novedad' novedad.id %}">{{ novedad }}</a></h2></a>
+            </div>
+            <div class="row">
+                <h5>{{ novedad.descripcion }}</h5>
+
+            </div>
+            <div class="row">
+                <a class="btn btn-danger mx-auto" href="{% url 'novedades:novedad' novedad.id %}">Ver más</a>
+            </div>
+            <hr class="mt-4 bg-light"/>
+        {% empty %}
+            <li>Todavía no se agregaron novedades.</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    <div class="row mb-4">
+        <h1 class="display-3">Últimos lanzamientos</h1> <a class="btn btn-danger m-4" href="{% url 'libros:listado_libros' %}">Ver todos</a>
+    </div>
+    <div class="row mx-auto">
+        {% for libro in libros %}
+        <div class="col-4 mt-4 mb-4">
+            <li class="list-inline-item ml-4">
+                <h3 class="text-center"><a class="text-light" href="{% url 'libros:libro' libro.ISBN %}">{{ libro }}</a></h3>
+
+                <a href="{% url 'libros:libro' libro.ISBN %}"/><img class="ml-4" src="{{ libro.imagen.url }}" height="250px"  width="160px" />
+            </li>
+        </div>
+        {% empty %}
+            <a>Todavía no se agregaron libros.</a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

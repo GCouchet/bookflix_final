@@ -1,0 +1,86 @@
+{% load bootstrap4 %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title >Bookflix</title>
+  {% bootstrap_css %}
+  {% bootstrap_javascript jquery="full" %}
+
+</head>
+
+<body class="bg-dark">
+
+    <div class="row d-block">
+        <nav class="navbar navbar-expand-mx navbar-dark bg-dark mb-4 border align-items-center">
+        <div class="col-xl-3 col-md-4 align-self-left">
+            {% if user.is_authenticated %}
+
+            <form class="form float-sm-right mr-3 " action="{% url 'libros:busqueda' %}" method="GET">
+                    <div class="row">
+                    <input type="text" name="q" value="{{ request.GET.q }}" class="form" placeholder="Buscá libros">
+
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+                    <button name="submit" class="btn btn-danger">
+                        <span class="fa fa-search"></span>
+                    </button>
+                    </div>
+            </form>
+
+            {% endif %}
+        </div>
+            <div class="col-3 align-self-right">
+                <a href="{% url 'novedades:index'  %}"style="margin-left:80px"><img src="/imagenes/logo.svg" width="60%" /></a>
+            </div>
+            {% if user.is_authenticated %}
+                <div class="col-3 align-self-right">
+
+                    <div class="float-center" >
+                        <div class="dropdown">
+                            <button type="dropdown" class="btn btn-danger dropleft dropdown-toggle" id="navbardrop" data-toggle="dropdown"> Menú </button>
+                            <div class="dropdown-menu">
+                            {% if not user.is_staff %}
+                                <a class="dropdown-item" href="{% url 'perfiles:seleccionarPerfil' %}">Perfiles</a>
+                                <a class="dropdown-item" href="{% url 'perfiles:verPerfil'  %}">Ver perfil</a>
+                                <a class="dropdown-item" href="{% url 'libros:historial'  %}">Historial</a>
+                                <a class="dropdown-item" href="{% url 'users:configurar'  %}">Configurar cuenta</a>
+                             {% else %}
+                                <a class="dropdown-item" href="/admin">Panel de administración</a>
+                             {% endif %}
+                                <a class="dropdown-item" href="{% url 'users:logout' %}">Cerrar sesión</a>
+                            </div>
+                        </div>
+                </div>
+                {% else %}
+                <div class="col-xl-3 col-md-4 align-self-right mr-4">
+                    <div class="row">
+                        <div class="float-sm-right mr-3">
+                            <a class="btn btn-danger" href="{% url 'users:login' %}">Iniciar sesión</a></li>
+                        </div>
+
+                        <div class="float-sm-right mr-3">
+                            <a class="btn btn-danger" href="{% url 'users:register' %}" >Registrarse</a></li>
+                        </div>
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </nav>
+    </div>
+
+
+    <main role="main" class="container-expand-mx m-3 bg-dark text-white">
+
+        <div>
+            {% block page_header %}{% endblock page_header %}
+        </div>
+        <div>
+            {% block content %}{% endblock content %}
+        </div>
+    </main>
+    {% block javascript %}
+    {% endblock javascript %}
+</body>
+
+</html>

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="row m-4">
+
+            {% if messages %}
+
+                {% for message in messages %}
+                    <h4  {% if message.tags %} class=" {{ message.tags }} " {% endif %}>   {{ message }} </h4>
+
+                {% endfor %}
+
+            {% else %}
+
+                <h4 class="m-4">Se ha cerrado su sesión. Gracias por su visita.</h4>
+
+            {% endif %}
+    </div>
+
+{% endblock content %}

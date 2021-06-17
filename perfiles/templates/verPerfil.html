@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block button_header %}
+
+    <form>
+        <input class="btn btn-danger ml-4" type="button" value="Volver" onclick="history.go(-1)">
+    </form>
+{% endblock button_header %}
+{% block page_header %}
+
+<head>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+{% endblock page_header %}
+
+{% block content %}
+
+<div class="jumbotron bg-dark">
+    <div class="row mb-4">
+        <h1 class="display-4">Mi perfil</h1>
+    </div>
+    <div class="content bg-dark">
+        <div class='row ml-4 mb-4'>
+            {% if messages %}
+                {% for message in messages %}
+                    <h4>  {{ message }} </h4>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="row">
+            <div class="col-1 mr-auto">
+                <h2 class="display-2 ml-4"> {{ perfil.nombre }} </h2>
+            </div>
+            <div class="col-1 mr-auto">
+                <a class="btn btn-danger mb-3" href="{% url 'perfiles:modificarPerfil' %}"> Editar nombre</a>
+                <a class="btn btn-danger" onclick="return confirm('¿Seguro que desea eliminar su perfil?');" href="{% url 'perfiles:eliminarPerfil' perfil.id %}"> Eliminar perfil </a>
+            </div>
+        </div>
+    </div>
+    <div class="jumbotron bg-dark">
+        <div class="row mt-4">
+            <h1 class="display-5 mr-4">Mi historial</h4>
+        </div>
+        <div class="row mt-4 mb-4">
+            {% for libro in librosLeidos %}
+                <div class="col-3">
+                    {% if libro.libro %}
+                        <h2><a class="text-light" href="{% url 'libros:libro' libro.libro.ISBN %}">{{ libro.libro.titulo }}</a></h2>
+                         <img class="mb-4" src="{{ libro.libro.imagen.url }}" alt="Imagen de portada" width="80%" />
+                    {% else %}
+                        <h2><a class="text-light" href="{% url 'libros:libro' libro.cap.libro.ISBN %}">{{ libro.cap.libro.titulo }} - {{ libro.cap.titulo }}</a></h2>
+                        <img class="mb-4" src="{{ libro.cap.libro.imagen.url }}" alt="Imagen de portada" width="80%" />
+                    {% endif %}
+                </div>
+                {% empty %}
+                    <a>No hay libros en tu historial.</a>
+            {% endfor %}
+        </div>
+        <div class="row ml-2">
+            <a class="btn btn-danger mb-3" href="{% url 'libros:historial' %}"> Ver historial </a>
+        </div>
+    </div>
+</div>
+{% endblock content %}

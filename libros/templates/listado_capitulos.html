@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block button_header %}
+
+<form>
+    <input class="btn btn-danger ml-4" type="button" value="Volver" onclick="history.go(-1)">
+</form>
+{% endblock button_header %}
+{% block content %}
+<div class="jumbotron bg-dark">
+    <div class="row">
+
+            {% if messages %}
+
+                {% for message in messages %}
+                    <h4  {% if message.tags %} class=" {{ message.tags }} " {% endif %}>   {{ message }} </h4>
+
+                    <h4><a class="btn btn-danger ml-2 mb-4" href="{% url 'users:configurar' %}">Cambiar suscripción</a></h4>
+                {% endfor %}
+
+            {% endif %}
+    </div>
+    <div class="row">
+        <h1 class="display-3">Todos los capítulos de {{ libro }}</h1>
+    </div>
+    {% for capitulo in capitulos %}
+        <div class="row">
+
+            <li class="list-inline-item ml-4">
+                <div class="col-4">
+                    {% if capitulo.imagen  %}
+                        <img src="{{ capitulo.imagen.url }}" width="80%" />
+                    {% endif %}
+                </div>
+
+                <h3><a class="text-light" href="{% url 'libros:capitulo' capitulo.id %}">{{ capitulo.indice }} : {{ capitulo.titulo }}</a></h3>
+
+        </div>
+        {% empty %}
+            <a>Todavía no se agregaron capitulos.</a>
+        {% endfor %}
+
+</div>
+
+{% endblock content %}

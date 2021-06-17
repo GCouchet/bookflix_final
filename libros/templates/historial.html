@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% load actualizar_fecha %}
+{% block button_header %}
+
+<form>
+    <input class="btn btn-danger ml-4" type="button" value="Volver" onclick="history.go(-1)">
+</form>
+{% endblock button_header %}
+{% block content %}
+<style>
+        ul {
+          list-style: none;
+        }
+
+        ul li::before {
+          content: "\2022";
+          color: red;
+          font-weight: bold;
+          display: inline-block;
+          width: 1em;
+          margin-left: -1em;
+        }
+</style>
+<div class="jumbotron bg-dark">
+    <div class="row">
+        <h1 class="display-4">Historial de {{ usuario }}</h1>
+    </div>
+    <div class="row mx-auto">
+      <ul>
+        {% with "" as dia %}
+        {% for libro in librosLeidos %}
+            {% if libro.ultima_fecha != dia %}
+              <li>{{ libro.ultima_fecha|date:'M d, Y' }}</li>
+              {% actualizar_f libro.ultima_fecha as dia %}
+            {% endif %}
+
+            <h3>
+                {% if libro.libro %}
+                 <a class="text-light" href="{% url 'libros:libro' libro.libro.ISBN %}">{{ libro.libro.titulo }}</a>
+                {% else %}
+                <a class="text-light" href="{% url 'libros:libro' libro.cap.libro.ISBN %}">{{ libro.cap.libro.titulo }} - {{ libro.cap.titulo }}</a>
+                {% endif %}
+            </h3> {% if libro.terminado == True  %} Finalizado{% else %} Leyendo {% endif %}
+          {% empty %}
+              <a>No hay libros en tu historial.</a>
+        {% endfor %}
+        {% endwith %}
+      </ul>
+</div>
+
+{% endblock content %}

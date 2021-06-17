@@ -1,0 +1,118 @@
+
+<h3>Tu opinión:</h3>
+
+<div id="my_opinion" class="list-group">
+
+    <div class="list-group-item m-4 border border-danger bg-light text-dark">
+        <div id="success_message"style="display: none;"></div>
+        {% if my_cal.valor %}
+
+            <div id="my_calification">
+            <div class="btn-group dropleft float-right">
+              <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only"></span>
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="javascript:editar_request({{book.ISBN}})">Editar</a>
+                {% if my_cal.comentario %}
+                    <a class="dropdown-item" href="javascript:eliminar_request()">Eliminar</a>
+                {% endif %}
+              </div>
+            </div>
+            {% load range %}
+                {% for i in my_cal.valor.valor|times %}
+                    <span class="fa fa-star checked"></span>
+                {% endfor %}
+                {% for i in my_cal.valor.valor|add:"-5"|times %}
+                    <span class="fa fa-star "></span>
+                {% endfor %}
+            </div>
+                <hr class="bg-dark"/>
+                {% if my_cal.comentario %}
+                    <h5 id="my_cal" class="ml-4"> {{ my_cal.comentario }} </h5>
+                {% else %}
+                    <h5 id="my_cal" class="ml-4"> No has comentado este libro </h5>
+                {% endif %}
+        {% else %}
+        <div id="no_cal" class="row">
+            <h5 class="m-4"> Aún no has calificado este libro.</h5>
+            <a href="javascript:calificar_request({{book.ISBN}})" class="btn btn-danger float-right m-4"> Calificar </a>
+        </div>
+        {% endif %}
+
+        <div id="editar" style="display: none;">
+                {% csrf_token %}
+                {% include 'customwidgets/star.html' %}
+                <div class="form-check mt-4 mb-4">
+                    <input type="checkbox" class="form-check-input" id="spoiler">
+                    <label class="form-check-label" for="spoiler">Por favor, marque este casillero si su comentario tiene spoilers.</label>
+                </div>
+                <textarea id="nuevo_comentario" class="form-control input-lg" style='resize: none;'  placeholder="Ingrese su comentario" ></textarea>
+                <a href="javascript:calificar_confirm({{book.ISBN}})" class="btn btn-danger float-right mt-4"> Guardar </a>
+                <a href="javascript:cancelar_calificar()" class="btn btn-danger float-right mt-4 mr-2"> Cancelar </a>
+        </div>
+        <div id="eliminar" style="display: none;">
+                {% csrf_token %}
+
+                <h4>¿Seguro que desea eliminar su calificación?</h4>
+
+                <a href="javascript:eliminar_confirm({{ my_cal.id }})" class="btn btn-danger float-right m-2"> Eliminar </a>
+                <a href="javascript:cancelar_eliminar()" class="btn btn-danger float-right m-2"> Cancelar </a>
+        </div>
+    </div>
+
+</div>
+
+
+<h3 >Quienes leyeron este libro dicen...</h3>
+<div class="list-group">
+
+{% for c in comments %}
+    {% if c.spoiler  %}
+        <div id="comentario{{c.id}}" class="list-group-item m-4 border border-danger bg-danger text-dark">
+    {% else %}
+        <div id="comentario{{c.id}}" class="list-group-item m-4 border border-danger bg-light text-dark">
+    {% endif %}
+        <div class="btn-group dropleft float-right">
+          <button type="button" class="btn btn-danger border-dark dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="sr-only"></span>
+          </button>
+          <div class="dropdown-menu">
+            {% if not c.spoiler %}
+                <a class="dropdown-item" href="javascript:reportarspoiler({{c.id}})">Reportar spoiler en este comentario</a>
+            {% endif %}
+            <a class="dropdown-item" href="javascript:reportarofensivo({{c.id}})">Reportar comentario ofensivo</a>
+          </div>
+        </div>
+        {% for i in c.valor.valor|times %}
+            <span class="fa fa-star checked"></span>
+        {% endfor %}
+        {% for i in c.valor.valor|add:"-5"|times %}
+            <span class="fa fa-star "></span>
+        {% endfor %}
+        <h4> {{ c.perfil.nombre }} dice: </h4>
+        <hr class="bg-dark"/>
+        {% if c.spoiler  %}
+            <h4 class="bg-danger ml-4">¡Spoiler alert! Este comentario contiene spoilers.</h4>
+        {% endif %}
+
+            <h5 id='comentario_texto{{c.id}}' class="m-4"> {{ c }} </h5>
+<!-- hacer esto de los colores para un comentario con o sin spoiler con un cacho de css a parte --!>
+
+<!-- agregar un if para ver si el comentario tiene más de cierta cantidad de caracteres para el botón de ver más --!>
+
+            {% if c.texto|length >= 50 %}
+                {% if c.spoiler %}
+                    <a class="btn btn-danger m-4 float-right" style="background-color:#F08080;" href="javascript:ver_mas({{c.id}})">Ver más</a>
+                {% else %}
+                    <a class="btn btn-danger m-4 float-right" href="javascript:ver_mas({{c.id}})">Ver más</a>
+                {% endif %}
+            {% endif %}
+            <p class="m-4"> Creado el: {{ c.fecha_creacion }} </p>
+    </div>
+{% empty %}
+    <div class="row m-4">
+        <h4> Este libro todavía no fue comentado. </h4>
+    </div>
+{% endfor %}
+</div>

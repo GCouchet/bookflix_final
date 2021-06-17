@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block button_header %}
+
+<form>
+    <input class="btn btn-danger ml-4" type="button" value="Volver" onclick="history.go(-1)">
+</form>
+{% endblock button_header %}
+{% block content %}
+<div class="jumbotron bg-dark">
+
+    <div class="row">
+        <h1 class="display-3">Todos los libros</h1>
+    </div>
+    <div class="row mx-auto">
+
+
+        {% for libro in books %}
+        <div class="col-4">
+            <li class="list-inline-item">
+                <p>
+                <h3><a class="text-light" href="{% url 'libros:libro' libro.ISBN %}">{{ libro }}</a></h3>
+                </p>
+                <p>
+                <a href="{% url 'libros:libro' libro.ISBN %}"/><img src="{{ libro.imagen.url }}"  height="250px"  width="160px" /></li>
+      </p>
+      </div>
+        {% empty %}
+            <a>Todavía no se agregaron libros.</a>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock content %}
